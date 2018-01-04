@@ -1,5 +1,6 @@
 package lb.com.example.coolweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -24,6 +25,7 @@ import java.io.IOException;
 
 import lb.com.example.coolweather.gson.Forecast;
 import lb.com.example.coolweather.gson.Weather;
+import lb.com.example.coolweather.service.AutoUpdateService;
 import lb.com.example.coolweather.util.HttpUtil;
 import lb.com.example.coolweather.util.Utility;
 import okhttp3.Call;
@@ -143,6 +145,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather",responseText);
                             editor.apply();
                             showWeatherInfo(weather);
+
                         }else{
                             Toast.makeText(WeatherActivity.this,"获取天气信息失败",
                                     Toast.LENGTH_SHORT).show();
@@ -205,6 +208,7 @@ public class WeatherActivity extends AppCompatActivity {
      * @param weather
      */
     private  void showWeatherInfo(Weather weather){
+
         String cityname=weather.basic.cityName;
         String updateTime=weather.basic.update.updateTime.split(" ")[1];
         String degree=weather.now.temperature+"℃";
@@ -230,7 +234,9 @@ public class WeatherActivity extends AppCompatActivity {
         if(weather.aqi!=null){
             aqiText.setText(weather.aqi.city.aqi);
             aqiText.setText(weather.aqi.city.pm25);
+
         }
+
         String comfort="舒适度："+weather.suggestion.comfort.info;
         String carWash="洗车指数："+weather.suggestion.carWash.info;
         String sport="运动建议："+weather.suggestion.sport.info;
@@ -238,5 +244,7 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        Intent intent=new Intent(this,AutoUpdateService.class);
+        startService(intent);
     }
 }
